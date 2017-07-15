@@ -210,7 +210,7 @@ if(confirm('Are You Sure You want to Delete  from the Group'))
                 </thead>
                 
                 <?php
-                echo $temp_group;
+               // echo $temp_group;
                 $query2="SELECT * FROM `memberinfo` WHERE `groupId`='$temp_group'";
                 $result2=mysqli_query($link,$query2);
                 $num_rows1=mysqli_num_rows($result2);
@@ -229,7 +229,26 @@ if(confirm('Are You Sure You want to Delete  from the Group'))
                   {$data['name']}
                   <td><br/>";
                   $i++;
-                  echo "<td><a href='editgroup.php?delete_id={$data['memberId']}' class='btn btn-danger'>Delete From  Group</a></td>";
+                  
+                  
+
+                  //query to check if a person is a group leader or not
+                  $query3="SELECT *from `groups` WHERE `groupId`='$temp_group'
+                   and leadername='{$data['name'] }'";
+                  $result3=mysqli_query($link,$query3);
+                  $ream=mysqli_fetch_assoc($result3);
+
+
+                  if($data['name']==$ream['leadername']){
+                  echo "<td><p class='btn btn-primary'>Group Leader</p></td>";
+                  echo "<td>--</td>";
+                  }
+                  else{
+                    echo "<td><a href='editgroup?setleader_id={$data['name']}' class='btn btn-success'>Make Leader</a></td>";
+                 
+                    echo "<td><a href='editgroup.php?delete_id={$data['memberId']}' class='btn btn-danger'>Delete From  Group</a></td>";
+                  }
+
                   echo "</tr>";
                 }
 
