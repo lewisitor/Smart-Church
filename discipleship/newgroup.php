@@ -172,10 +172,12 @@ $(document).ready(function(){
               "value", ""+ datas 
               );
             //alert("Data: " + data + "\nStatus: " + status);
+           // alert(datas);
         });
       }
     });
   });
+
 $(".btn").click(function(){
   $.get("backbone/check.php?names=" + $("#leadername").val(), function(datas, statu){
     $("#id").attr(

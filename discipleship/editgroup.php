@@ -22,9 +22,91 @@ $memid=0;
 
 
 <?php
+if(isset($_REQUEST['delete_id'])){
+
+  //getting the member Id for group member to be deleted from db
+  $memid=$_REQUEST['delete_id'];
+  //echo $memid;
+$val=0;
+/*  echo "<script type='text/javascript'>
+if(confirm('Are You Sure You want to Delete  from the Group'))
+{
+  
+}
+  else{
+//  window.history.back();
+  
+  }
+   </script>";*/
+
+  $query_id="SELECT  * from `memberinfo` WHERE `memberId`=$memid";
+  $result_id=mysqli_Query($link,$query_id);
+
+  $name_id=mysqli_fetch_assoc($result_id);
+
+  $grpid=$name_id['groupId'];
+  $grpname=$name_id['name'];
+
+  //echo $grpid;
+  //echo $grpname;
+
+  $query_id1="UPDATE `memberinfo` SET `groupId`='' WHERE `memberId`=$memid";
+  $result_id1=mysqli_Query($link,$query_id1);
+
+  if($result_id1){
+   // echo "OK";
+    header("Location:editgroup.php?groupadgrpid}");
+  }
+
+
+}
+
+
+?>
+
+
+
+<?php
+if(isset($_REQUEST['leader_id']))
+{
+  $lead=$_REQUEST['leader_id'];
+
+ // echo $lead;
+
+  //echo $memid;
+  $query_id="SELECT  * from `memberinfo` WHERE `memberId`=$lead";
+  $result_id=mysqli_Query($link,$query_id);
+
+  $name_id=mysqli_fetch_assoc($result_id);
+
+  $grpid=$name_id['groupId'];
+  $grpname=$name_id['name'];
+
+  //echo $grpid;
+  //echo $grpname;
+
+  $query_id1="UPDATE `groups` SET `memberId`=$lead,`leadername`='$grpname' WHERE `groupId`=$grpid";
+  $result_id1=mysqli_Query($link,$query_id1);
+
+  if($result_id1){
+   // echo "OK";
+    header("Location:editgroup.php?group={$grpid}");
+  }
+ /* else{
+    echo "Not Ok Lewis";
+  }*/
+
+}
+/*else{
+  echo "No way";
+}*/
+?>
+
+
+<?php
 //include "../link.php";
 if(isset($_REQUEST['group'])){
-  $group=$_POST['group_id'];
+  $group=$_REQUEST['group'];
   //echo $group;
 
   $query1="SELECT * FROM `groups` WHERE `groupId`='$group'";
@@ -47,27 +129,9 @@ if(isset($_REQUEST['group'])){
 }
 ?>
 
-<?php
-if(isset($_REQUEST['delete_id'])){
-
-  //getting the member Id for group member to be deleted from db
-  $memid=$_REQUEST['delete_id'];
-  //echo $memid;
-$val=0;
-  echo "<script type='text/javascript'>
-if(confirm('Are You Sure You want to Delete  from the Group'))
-{
-  
-}
-  else{
-//  window.history.back();
-  
-  }
-   </script>";
-}
 
 
-?>
+
 
 <html>
 <head>
@@ -155,7 +219,7 @@ if(confirm('Are You Sure You want to Delete  from the Group'))
                   <label class="col-md-4 control-label"><span style="font-size: 25px;">Group ID:<i class="fi-torsos-female-male"></i></span></label>
 
                   <div class="col-md-6">
-                    <input type="text" name="group_id" placeholder="Enter Group Id">
+                    <input type="text" name="group" placeholder="Enter Group Id">
                   </div>
                   
                 </div>
@@ -244,7 +308,7 @@ if(confirm('Are You Sure You want to Delete  from the Group'))
                   echo "<td>--</td>";
                   }
                   else{
-                    echo "<td><a href='editgroup?setleader_id={$data['name']}' class='btn btn-success'>Make Leader</a></td>";
+                    echo "<td><a href='editgroup.php?leader_id={$data['memberId']}' class='btn btn-success'>Make Leader</a></td>";
                  
                     echo "<td><a href='editgroup.php?delete_id={$data['memberId']}' class='btn btn-danger'>Delete From  Group</a></td>";
                   }
@@ -255,10 +319,39 @@ if(confirm('Are You Sure You want to Delete  from the Group'))
 
                 ?>
                <tr>
-                <td><a href="editgroup.php?addmember" class="btn btn-primary">Add Member to Group</a></td>
+                <td><b href="#" class="btn btn-primary" id="addmenu" onclick="showaddmenu()">Add Member to Group</b></td>
                </tr>
               </table>
             </div> 
+
+          <div id="addmember" style="visibility:hidden;" class="row">
+              <form class="form-horizontal" role="form" action="editgroup.php?group" role="form" class="form-horizontal" method="POST">
+                <div class="form-group">
+                  <label class="col-md-4 control-label"><span style="font-size: 20px;">Member Name:<i class="fi-torsos-female-male"></i></span></label>
+
+                  <div class="col-md-6">
+                    <input  list="name" name="group" id="membergroup"  placeholder="Enter Member Name">
+                    <datalist id="name">
+                          </datalist>
+                  </div>
+                     <div class='label label-primary status'></div>
+                </div>
+
+                 <div class='form-group' style="display: none;">
+                      <div class='col-md-10'>
+                        <input type='text' class='form-control' id="id" name='memid' required>
+                      </div>
+                    </div>
+                <div class="form-group">
+            <div class="col-md-6 col-md-offset-4">
+              <button type="submit" class="btn btn-success">
+                <span><i class="fa fa-btn fa-user"></i></span>  Submit Info
+              </button>
+            </div>
+          </div>
+              </form>
+          </div>
+
 <?php
 if(isset($leadername)){
   //echo 1234;
@@ -327,6 +420,45 @@ function showPage() {
   document.getElementById("loader").style.display = "none";
   document.getElementById("myDiv").style.display = "block";
 }
+
+function showaddmenu(){
+  document.getElementById('addmember').style.visibility="visible";
+
+
+}
+
+$(document).ready(function(){
+  $('#membergroup').on({
+    keyup:function(){
+      var x=document.getElementById('membergroup').value;
+     $.get("backbone/check.php?name=" + x, function(data, status){
+          //alert(""+ data);
+            $("datalist").html(""+ data);
+            $(".status").text(""+ status);
+            //alert("Data: " + data + "\nStatus: " + status);
+           // alert(data);
+        });
+
+//alert(x);
+
+    },
+
+      keydown: function(){
+
+        $.get("backbone/check.php?names=" + $("#membergroup").val(), function(datas, statu){
+            $("#id").attr(
+              "value", ""+ datas 
+              );
+            //alert("Data: " + data + "\nStatus: " + status);
+            //alert(datas);
+        });
+  //alert("Am down Now");
+
+      }
+
+  });
+}
+  );
 </script>
 </body>
 </html>
