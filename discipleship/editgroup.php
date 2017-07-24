@@ -55,7 +55,7 @@ if(confirm('Are You Sure You want to Delete  from the Group'))
 
   if($result_id1){
    // echo "OK";
-    header("Location:editgroup.php?groupadgrpid}");
+    header("Location:editgroup.php?group={$grpid}");
   }
 
 
@@ -103,6 +103,7 @@ if(isset($_REQUEST['leader_id']))
 ?>
 
 
+
 <?php
 //include "../link.php";
 if(isset($_REQUEST['group'])){
@@ -123,14 +124,60 @@ if(isset($_REQUEST['group'])){
 
   $leadername=$name['leadername'];
   $temp_group=$group;
-  //echo $leadername;
-
+  //echo $leadern
+  $_SESSION['group']=$temp_group;
         }
 }
 ?>
 
 
+<?php
+//to handle the adding of a memer toa  group
+if(isset($_REQUEST['addmember'])){
+  //echo "Lewis Ohh";
+ // echo $temp_group;
+  //echo $_SESSION['group'];
 
+
+  $membername=$_POST['membergroup'];
+
+  $memid=$_POST['memid'];
+
+  $quer = "SELECT * FROM `memberinfo` WHERE `memberId`='$memid' AND name='$membername'";
+
+   $result = mysqli_query($link, $quer);
+
+   $name=mysqli_fetch_assoc($result);
+
+   $grpid=$name['groupId'];
+
+   if($grpid>0){
+    echo "Person in another Group";
+   }
+
+   //echo $name['name'];
+   //adding someone in another group means first of all deleting the person in the group in which the person was
+  
+   else{
+    //echo "Free to add person to anotehr group";
+     $quer1="UPDATE `memberinfo` SET `groupId`={$_SESSION['group']} WHERE `memberId`=$memid";
+    $res1=mysqli_query($link,$quer1);
+    header("Location:editgroup.php?group={$_SESSION['group']}");
+    unset($_SESSION['group']);
+
+   }
+  /*else(mysqli_num_rows($result)==1){
+    $quer1="UPDATE `memberinfo` SET `groupId`='{$_SESSION['group']}' WHERE `memberId`=$memid and name='$membername'";
+    $res1=mysqli_query($quer1);
+
+
+   }
+*/
+
+}
+
+
+?>
 
 
 <html>
@@ -325,12 +372,12 @@ if(isset($_REQUEST['group'])){
             </div> 
 
           <div id="addmember" style="visibility:hidden;" class="row">
-              <form class="form-horizontal" role="form" action="editgroup.php?group" role="form" class="form-horizontal" method="POST">
+              <form class="form-horizontal" role="form" action="editgroup.php?addmember" role="form" class="form-horizontal" method="POST">
                 <div class="form-group">
                   <label class="col-md-4 control-label"><span style="font-size: 20px;">Member Name:<i class="fi-torsos-female-male"></i></span></label>
 
                   <div class="col-md-6">
-                    <input  list="name" name="group" id="membergroup"  placeholder="Enter Member Name">
+                    <input  list="name" name="membergroup" id="membergroup"  placeholder="Enter Member Name">
                     <datalist id="name">
                           </datalist>
                   </div>
@@ -345,7 +392,7 @@ if(isset($_REQUEST['group'])){
                 <div class="form-group">
             <div class="col-md-6 col-md-offset-4">
               <button type="submit" class="btn btn-success">
-                <span><i class="fa fa-btn fa-user"></i></span>  Submit Info
+                <span><i class="fa fa-btn fa-user"></i></span> Add Member
               </button>
             </div>
           </div>
@@ -457,8 +504,16 @@ $(document).ready(function(){
       }
 
   });
-}
-  );
+});
+
+$(".btn").click(function(){
+  $.get("backbone/check.php?names=" + $("#membergroup").val(), function(datas, statu){
+    $("#id").attr(
+     "value", ""+ datas 
+    );
+    //alert("Data: " + datas + "\nStatus: " + statu);
+ });
+});
 </script>
 </body>
 </html>
