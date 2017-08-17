@@ -25,10 +25,11 @@ if(isset($_REQUEST['create'])){
     $groupid = mysqli_insert_id($link);
     $update = "UPDATE memberinfo SET groupId='$groupid' WHERE memberId='$memid'";
     mysqli_query($link, $update);
+    $_SESSION["groupId"] = $groupid;
     header("location: editgroup.php?add");
   } 
   elseif(mysqli_num_rows($result) == 0) {
-      $err = "Member does not exist in the system please add the member before creating the group ";
+      $err = "Member does not exist in the systerm please add the member before creating the group ";
   }
 }
 
@@ -172,12 +173,10 @@ $(document).ready(function(){
               "value", ""+ datas 
               );
             //alert("Data: " + data + "\nStatus: " + status);
-           // alert(datas);
         });
       }
     });
   });
-
 $(".btn").click(function(){
   $.get("backbone/check.php?names=" + $("#leadername").val(), function(datas, statu){
     $("#id").attr(

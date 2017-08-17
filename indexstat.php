@@ -42,6 +42,7 @@
  						<li><a href="statistics.php">Statistics</a></li>
  						<li><a href='submissionprev.php'>Submission</a></li>
  						<li><a href="#">Search</a></li>
+                        <li><a href="discipleship/">Discipleship</a></li>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">

@@ -85,9 +85,59 @@
         			<div class="row">
 
 
-                <!--search body ---->
+                  <!--search body ---->
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <form class="form-horizontal" role="form">
+                        <div class="col-md-12">
+                           <input list="name" class="form-control" size="60" name="name" id="ind_name" type="text" placeholder="Enter Member Name" required>
+                          <datalist id="name">
+                          </datalist>
+                        </div>
+                         <div class='label label-primary status'></div>
+                      </div>
+                      <div class='form-group' style="display: none;">
+                      <div class='col-md-10'>
+                        <input type='text' class='form-control' id="id" name='memid' required>
+                      </div>
+                    </div>
+                      </form>
+                    </div>
+                  </div>
 
+                  <!-- Submit Button -->
+              <div class="form-group">
+                <br/>
+            <div class="col-md-6 col-md-offset-5">
+              <button type="button" class="btn btn-success" id="showDetail">
+                <span><i class="fa fa-btn fa-user"></i></span> Show Details
+              </button>
+            </div>
+          
+              <div class="row" id="details" style="visibility:hidden;">
+                <table class="table table-stripped">
+                  <thead>
+                    <tr>
+                      <th>Name:</th>
+                      <th>Phone Number</th>
+                      <th>Resident</th>
+                      <th>Leadership Position</th>
+                      <th>Gender</th>
+                      <th>Email</th>
+                      <th>Group</th>
 
+                    </tr>
+                  </thead>
+                  <tbody id="rdata">
+                  </tbody>
+                 
+                </table>
+                 <div class="row" id="singleResult" style="margin:0px 0px 0px 370px;">
+                </div>
+                <div id="Error" class="row" >
+                </div>
+              </div>
+              </div>
         			</div>
         		</div>
         	</div>
@@ -104,5 +154,126 @@ function showPage() {
   document.getElementById("loader").style.display = "none";
   document.getElementById("myDiv").style.display = "block";
 }
+
+
+/*$("#showDetail").click(function(){
+ // if($("#ind_name").val!=""){
+    $.post("backbone/searchdisp.php?search",{
+      name: $("#ind_name").val();
+    },
+    function(datas){
+      alert(datas);
+    });
+  //}
+});*/
+
+//for single analysis
+$("#showDetail").click(function(){
+  document.getElementById('details').style.visibility="visible";
+  if($("#ind_name").val!=""){
+   
+   // $("#body").show("slow");
+    $("#rdata").show("slow");
+      $.post("backbone/searchdisp.php?search",{
+      name: $("#ind_name").val(),
+    
+  },
+      function(datas){
+    //  alert(datas);
+    var some=JSON.parse(datas);
+    switch(some.stat){
+      case 1:
+      $("#details").show("slow");
+      $("#rdata").show('slow');
+      $("#Error").show("slow");
+      $("#singleResult").show("slow");
+
+if(some.leadership!=""){
+  //alert(123);
+  //alert(some.leadership);
+   $("#Error").show("slow");
+   //$("#Error").html(""+datas);
+      $("#rdata").html("<tr><td>"+some.namef+"</td><td>"+some.phone_num+"</td>"+
+            "<td>"+some.resident+"</td>"+
+            "<td>"+some.leadership+"</td>"+
+            "<td>"+some.gender+"</td>"+
+             "<td>"+some.email+"</td>"+
+            "<td>"+some.groupId+"</td>"+
+            "</tr>");
+      /*if(some.gender=="male"){
+      $("#singleResult").html("<img src='../image/male1_ico.png' />");
+      }
+      else if(some.gender=="female"){
+       $("#singleResult").html("<img src='../image/female_ico.jpg' />"); 
+      }*/
+      //used to switch the icons for both Male and Female
+      switch(some.gender){
+        case 'female':
+        $("#singleResult").html("<img src='../image/female_ico.jpg' />"); 
+        break;
+        case 'male':
+        $("#singleResult").html("<img src='../image/male1_ico.png' />");
+        break;
+
+      }
+
+      }
+      else {
+       // alert(456);
+        $("#rdata").html("<tr><td>"+some.namef+"</td><td>"+some.phone_num+"</td>"+
+            "<td>"+some.resident+"</td>"+
+            "<td> N/A</td>"+
+            "<td>"+some.gender +"</td>"+
+             "<td>"+some.email +"</td>"+
+            "<td>"+some.groupId+"</td>"+
+            "</tr>");
+      }
+      break;
+      case 2:
+      $("#details").hide("slow");
+      $("#rdata").hide('slow');
+      $("#Error").show("slow");
+      
+      $("#singleResult").hide("slow");
+
+      $("#Error").html("<b>"+some.message+"</b>");
+      break;
+    }
+     
+      });
+}
+
+
+
+});
+
+
+
+
+
+$('#ind_name').on({
+  keyup:function(){
+    var x=document.getElementById("ind_name").value;
+    //alert(x);
+    $.get("backbone/check.php?name=" + x,function(data,status){
+      $("datalist").html(""+data);
+      $(".status").text(""+status);
+      $("#tdata").hide("slow");
+    });
+  },
+
+  keydown: function(){
+$("#tdata").hide("slow");
+    $.get("backbone/check.php?names=" + $("ind_name").val(),function(datas,statu){
+      $("id").attr(
+        "value",""+datas
+        );
+    });
+  }
+});
+
+
+
+
 </script>
 </html>
